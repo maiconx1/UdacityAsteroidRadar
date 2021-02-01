@@ -125,7 +125,7 @@ class MainFragment : Fragment() {
             MainViewModel.Filter.SAVED -> asteroids?.filter { asteroid -> asteroid.saved }
             else -> asteroids
         }
-        if (filtered?.isEmpty() == true) {
+        if (filtered?.isEmpty() == true && filter == MainViewModel.Filter.SAVED) {
             binding.asteroidRecycler.visibility = GONE
             binding.textNoSavedAsteroids.visibility = VISIBLE
         } else {
