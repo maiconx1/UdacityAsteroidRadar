@@ -10,4 +10,16 @@
         <item name="android:fontFamily">@font/roboto</item>
     </style>
 
+    <style name="detail_title">
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="detail_subtitle">
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

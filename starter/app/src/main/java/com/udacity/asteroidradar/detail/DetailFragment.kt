@@ -70,10 +70,18 @@ class DetailFragment : Fragment() {
     }
 
     private fun setMenuIcon(saved: Boolean) {
-        if (saved) {
-            menu.findItem(R.id.menu_save_asteroid).setIcon(R.drawable.ic_delete)
-        } else {
-            menu.findItem(R.id.menu_save_asteroid).setIcon(R.drawable.ic_save)
+        menu.findItem(R.id.menu_save_asteroid).apply {
+            if (saved) {
+                setIcon(R.drawable.ic_delete)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    contentDescription = getString(R.string.description_delete_asteroid)
+                }
+            } else {
+                menu.findItem(R.id.menu_save_asteroid).setIcon(R.drawable.ic_save)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    contentDescription = getString(R.string.description_save_asteroid)
+                }
+            }
         }
     }
 }

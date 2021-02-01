@@ -31,7 +31,7 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
             val currentTime = calendar.time
             calendar.add(Calendar.DAY_OF_YEAR, Constants.DEFAULT_END_DATE_DAYS)
             val weekTime = calendar.time
-            val asteroids = Network.asteroids.getAsteroids(
+            val asteroids = Network.asteroids.getAsteroidsAsync(
                 currentTime.getFormattedDate(),
                 weekTime.getFormattedDate()
             ).await()
@@ -44,7 +44,7 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
 
     suspend fun getImageOfTheDay() {
         withContext(Dispatchers.IO) {
-            val picture = Network.asteroids.getImageOfTheDay().await()
+            val picture = Network.asteroids.getImageOfTheDayAsync().await()
             database.pictureOfDayDao.insertAll(*listOf(picture).asDatabase().toTypedArray())
         }
     }
