@@ -25,4 +25,5 @@
     <string name="no_connection">Sem conexão</string>
     <string name="description_save_asteroid">Salvar asteroide</string>
     <string name="description_delete_asteroid">Deletar asteroide</string>
+    <string name="no_saved_asteroids">Asteroides salvos aparecerão aqui</string>
 </resources>

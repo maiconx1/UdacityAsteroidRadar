@@ -59,6 +59,22 @@
             app:layout_constraintVertical_bias="0.0"
             tools:listitem="@layout/asteroid_item" />
 
+        <TextView
+            android:id="@+id/text_no_saved_asteroids"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            android:gravity="center"
+            android:text="@string/no_saved_asteroids"
+            android:textColor="@color/default_text_color"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_main_image_of_the_day_layout"
+            tools:visibility="visible" />
+
         <ProgressBar
             android:id="@+id/status_loading_wheel"
             android:layout_width="wrap_content"

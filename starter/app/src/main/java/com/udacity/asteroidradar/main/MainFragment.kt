@@ -28,12 +28,13 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var adapter: AsteroidAdapter
+    private lateinit var binding: FragmentMainBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentMainBinding.inflate(inflater)
+        binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
@@ -123,6 +124,13 @@ class MainFragment : Fragment() {
             MainViewModel.Filter.TODAY -> asteroids?.filter { asteroid -> asteroid.closeApproachDate == Calendar.getInstance().time.getFormattedDate() }
             MainViewModel.Filter.SAVED -> asteroids?.filter { asteroid -> asteroid.saved }
             else -> asteroids
+        }
+        if (filtered?.isEmpty() == true) {
+            binding.asteroidRecycler.visibility = GONE
+            binding.textNoSavedAsteroids.visibility = VISIBLE
+        } else {
+            binding.asteroidRecycler.visibility = VISIBLE
+            binding.textNoSavedAsteroids.visibility = GONE
         }
         adapter.submitList(filtered)
     }
