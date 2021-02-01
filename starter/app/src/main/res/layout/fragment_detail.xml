@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:padding="16dp"
                         app:srcCompat="@drawable/ic_help_circle"
-                        android:contentDescription="@string/description_absolute_magnitude_help_button"/>
+                        android:contentDescription="@string/astronomical_unit_explanation_button"/>
 
                 </LinearLayout>
 

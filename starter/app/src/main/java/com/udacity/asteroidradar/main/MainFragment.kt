@@ -2,6 +2,8 @@ package com.udacity.asteroidradar.main
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -10,16 +12,22 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.AsteroidItemBinding
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.domain.Asteroid
+import com.udacity.asteroidradar.getFormattedDate
+import java.util.*
 
 class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
+
+    private lateinit var adapter: AsteroidAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,11 +40,56 @@ class MainFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        val adapter = AsteroidAdapter(AsteroidClick {
+        adapter = AsteroidAdapter(AsteroidClick {
             val action = MainFragmentDirections.actionShowDetail(it)
             findNavController().navigate(action)
         })
         binding.asteroidRecycler.adapter = adapter
+
+        viewModel.asteroids.observe(viewLifecycleOwner, { asteroids ->
+            asteroids?.let {
+                updateList(asteroids, viewModel.filter.value)
+            }
+            if (asteroids?.isNullOrEmpty() == true) {
+                binding.statusLoadingWheel.visibility = VISIBLE
+            } else {
+                binding.statusLoadingWheel.visibility = GONE
+            }
+        })
+
+        viewModel.pictureOfDay.observe(viewLifecycleOwner, { picture ->
+            if (picture?.isNotEmpty() == true) {
+                val pic = picture[0]
+                if (pic.mediaType == "image") {
+                    binding.activityMainImageOfTheDayLayout.visibility = VISIBLE
+                    Picasso.with(context).load(pic.url).into(binding.activityMainImageOfTheDay)
+                    binding.activityMainImageOfTheDay.contentDescription = getString(
+                        R.string.nasa_picture_of_day_content_description_format,
+                        pic.title
+                    )
+                } else {
+                    binding.activityMainImageOfTheDayLayout.visibility = GONE
+                }
+            } else {
+                binding.activityMainImageOfTheDayLayout.visibility = GONE
+            }
+        })
+
+        viewModel.filter.observe(viewLifecycleOwner, { filter ->
+            updateList(viewModel.asteroids.value, filter)
+        })
+
+        viewModel.error.observe(viewLifecycleOwner, { error ->
+            if (error) {
+                Snackbar.make(binding.root, R.string.no_connection, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.refresh) {
+                        viewModel.fetchData()
+                    }.show()
+                viewModel.finishedShowingError()
+            }
+        })
+
+        activity?.setTitle(R.string.app_name)
 
         return binding.root
     }
@@ -47,7 +100,31 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.show_week_menu -> {
+                viewModel.updateFilter(MainViewModel.Filter.WEEK)
+            }
+            R.id.show_today_menu -> {
+                viewModel.updateFilter(MainViewModel.Filter.TODAY)
+            }
+            R.id.show_saved_menu -> {
+                viewModel.updateFilter(MainViewModel.Filter.SAVED)
+            }
+        }
         return true
+    }
+
+    private fun updateList(
+        asteroids: List<Asteroid>?,
+        filter: MainViewModel.Filter? = MainViewModel.Filter.WEEK
+    ) {
+        val filtered = when (filter) {
+            MainViewModel.Filter.WEEK -> asteroids
+            MainViewModel.Filter.TODAY -> asteroids?.filter { asteroid -> asteroid.closeApproachDate == Calendar.getInstance().time.getFormattedDate() }
+            MainViewModel.Filter.SAVED -> asteroids?.filter { asteroid -> asteroid.saved }
+            else -> asteroids
+        }
+        adapter.submitList(filtered)
     }
 }
 
